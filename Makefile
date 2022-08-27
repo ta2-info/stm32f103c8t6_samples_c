@@ -47,7 +47,7 @@ install:
 
 debugserver:
 #	$(ST-UTIL) -p 3333 -m
-	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg
+	$(OPENOCD) -d1 -f interface/stlink.cfg -f target/stm32f1x.cfg
 
 debug:
 	$(GDB) -x debug.gdb blink.elf
