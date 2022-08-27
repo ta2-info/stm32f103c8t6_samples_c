@@ -14,7 +14,7 @@
 #define REG_GPIOC_ODR (REG_GPIOC + 0x0c)
 
 void _start() {
-  // Enable clock of GPIOA
+  // Enable clock of GPIOC
   uint8_t tmp8 = GET_REG8(REG_RCC_APB2ENR);
   SET_REG8(REG_RCC_APB2ENR, tmp8 | (1 << 4)); // bit4:GPIOC
 
