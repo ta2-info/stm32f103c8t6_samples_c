@@ -1,17 +1,5 @@
 
-#include "common_macro.h"
-
-// base address of RCC(Reset and clock control)
-#define REG_RCC ((uint32_t) 0x40021000)
-// APB2 peripheral clock enable register
-#define REG_RCC_APB2ENR (REG_RCC + 0x18)
-
-// base address of GPIO Port C
-#define REG_GPIOC ((uint32_t) 0x40011000)
-// GPIOC_CRH(Port C configuration register high)
-#define REG_GPIOC_CRH (REG_GPIOC + 0x04)
-// GPIOC_ODR(Port C output data register)
-#define REG_GPIOC_ODR (REG_GPIOC + 0x0c)
+#include "stm32f103c8.h"
 
 void _start() {
   // Enable clock of GPIOC

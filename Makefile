@@ -27,39 +27,105 @@ CCOPT = -c -g -mcpu=cortex-m3 -mthumb
 ASMOPT = -g -mcpu=cortex-m3 -mthumb
 LDOPT = -Tstm32f103c8.ld
 
-all: blink.bin
+all: blink.bin usart1_tx.bin usart1_rx.bin usart1_rxtx.bin
 
 blink.bin: blink.elf
 	$(OBJCOPY) -O binary $< $@
 
-blink.elf: vector.o main.o
-	$(LD) $(LDOPT) -o $@ vector.o main.o -Map main.map
+usart1_tx.bin: usart1_tx.elf
+	$(OBJCOPY) -O binary $< $@
+
+usart1_rx.bin: usart1_rx.elf
+	$(OBJCOPY) -O binary $< $@
+
+usart1_rxtx.bin: usart1_rxtx.elf
+	$(OBJCOPY) -O binary $< $@
+
+
+blink.elf: vector.o blink.o
+	$(LD) $(LDOPT) -o $@ vector.o blink.o -Map blink.map
+
+usart1_tx.elf: vector.o usart1_tx.o
+	$(LD) $(LDOPT) -o $@ vector.o usart1_tx.o -Map usart1_tx.map
+
+usart1_rx.elf: vector.o usart1_rx.o
+	$(LD) $(LDOPT) -o $@ vector.o usart1_rx.o -Map usart1_rx.map
+
+usart1_rxtx.elf: vector.o usart1_rxtx.o
+	$(LD) $(LDOPT) -o $@ vector.o usart1_rxtx.o -Map usart1_rxtx.map
+
 
 vector.o: vector.s
 	$(ASM) $(ASMOPT) -o $@ $<
 
-main.o: main.c
+blink.o: blink.c
 	$(CC) $(CCOPT) -o $@ $<
 
-install:
+usart1_tx.o: usart1_tx.c
+	$(CC) $(CCOPT) -o $@ $<
+
+usart1_rx.o: usart1_rx.c
+	$(CC) $(CCOPT) -o $@ $<
+
+usart1_rxtx.o: usart1_rxtx.c
+	$(CC) $(CCOPT) -o $@ $<
+
+
+install-blink:
 #	$(ST-FLASH) write blink.bin $(BASE_FLASH)
 	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./blink.bin $(BASE_FLASH) verify reset exit"
+
+install-usart1_tx:
+#	$(ST-FLASH) write usart1_tx.bin $(BASE_FLASH)
+	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./usart1_tx.bin $(BASE_FLASH) verify reset exit"
+
+install-usart1_rx:
+#	$(ST-FLASH) write usart1_rx.bin $(BASE_FLASH)
+	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./usart1_rx.bin $(BASE_FLASH) verify reset exit"
+
+install-usart1_rxtx:
+#	$(ST-FLASH) write usart1_rxtx.bin $(BASE_FLASH)
+	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./usart1_rxtx.bin $(BASE_FLASH) verify reset exit"
+
+
+dis-blink:
+	$(OBJDUMP) -D blink.elf
+
+dis-usart1_tx:
+	$(OBJDUMP) -D usart1_tx.elf
+
+dis-usart1_rx:
+	$(OBJDUMP) -D usart1_rx.elf
+
+dis-usart1_rxtx:
+	$(OBJDUMP) -D usart1_rxtx.elf
+
 
 debugserver:
 #	$(ST-UTIL) -p 3333 -m
 	$(OPENOCD) -d1 -f interface/stlink.cfg -f target/stm32f1x.cfg
 
-debug:
+
+debug-blink:
 	$(GDB) -x debug.gdb blink.elf
 #	$(LLDB) -s debug.lldb blink.elf
 
-clean:
-	$(RM) blink.bin
-	$(RM) blink.elf
-	$(RM) vector.o
-	$(RM) main.o
-	$(RM) main.map
+debug-usart1_tx:
+	$(GDB) -x debug.gdb usart1_tx.elf
+#	$(LLDB) -s debug.lldb usart1_tx.elf
 
-dis:
-	$(OBJDUMP) -D blink.elf
+debug-usart1_rx:
+	$(GDB) -x debug.gdb usart1_rx.elf
+#	$(LLDB) -s debug.lldb usart1_rx.elf
+
+debug-usart1_rxtx:
+	$(GDB) -x debug.gdb usart1_rxtx.elf
+#	$(LLDB) -s debug.lldb usart1_rxtx.elf
+
+
+clean:
+	$(RM) *.bin
+	$(RM) *.elf
+	$(RM) *.o
+	$(RM) *.map
 
