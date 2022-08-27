@@ -27,9 +27,12 @@ CCOPT = -c -g -mcpu=cortex-m3 -mthumb
 ASMOPT = -g -mcpu=cortex-m3 -mthumb
 LDOPT = -Tstm32f103c8.ld
 
-all: blink.bin usart1_tx.bin usart1_rx.bin usart1_rxtx.bin
+all: blink.bin blinkwithtimer.bin usart1_tx.bin usart1_rx.bin usart1_rxtx.bin
 
 blink.bin: blink.elf
+	$(OBJCOPY) -O binary $< $@
+
+blinkwithtimer.bin: blinkwithtimer.elf
 	$(OBJCOPY) -O binary $< $@
 
 usart1_tx.bin: usart1_tx.elf
@@ -45,6 +48,9 @@ usart1_rxtx.bin: usart1_rxtx.elf
 blink.elf: vector.o blink.o
 	$(LD) $(LDOPT) -o $@ vector.o blink.o -Map blink.map
 
+blinkwithtimer.elf: vector.o interrupt.o blinkwithtimer.o
+	$(LD) $(LDOPT) -o $@ vector.o interrupt.o blinkwithtimer.o -Map blinkwithtimer.map
+
 usart1_tx.elf: vector.o usart1_tx.o
 	$(LD) $(LDOPT) -o $@ vector.o usart1_tx.o -Map usart1_tx.map
 
@@ -58,7 +64,13 @@ usart1_rxtx.elf: vector.o usart1_rxtx.o
 vector.o: vector.s
 	$(ASM) $(ASMOPT) -o $@ $<
 
+interrupt.o: interrupt.c
+	$(CC) $(CCOPT) -o $@ $<
+
 blink.o: blink.c
+	$(CC) $(CCOPT) -o $@ $<
+
+blinkwithtimer.o: blinkwithtimer.c
 	$(CC) $(CCOPT) -o $@ $<
 
 usart1_tx.o: usart1_tx.c
@@ -75,6 +87,10 @@ install-blink:
 #	$(ST-FLASH) write blink.bin $(BASE_FLASH)
 	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./blink.bin $(BASE_FLASH) verify reset exit"
 
+install-blinkwithtimer:
+#	$(ST-FLASH) write blinkwithtimer.bin $(BASE_FLASH)
+	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./blinkwithtimer.bin $(BASE_FLASH) verify reset exit"
+
 install-usart1_tx:
 #	$(ST-FLASH) write usart1_tx.bin $(BASE_FLASH)
 	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./usart1_tx.bin $(BASE_FLASH) verify reset exit"
@@ -90,6 +106,9 @@ install-usart1_rxtx:
 
 dis-blink:
 	$(OBJDUMP) -D blink.elf
+
+dis-blinkwithtimer:
+	$(OBJDUMP) -D blinkwithtimer.elf
 
 dis-usart1_tx:
 	$(OBJDUMP) -D usart1_tx.elf
@@ -109,6 +128,10 @@ debugserver:
 debug-blink:
 	$(GDB) -x debug.gdb blink.elf
 #	$(LLDB) -s debug.lldb blink.elf
+
+debug-blinkwithtimer:
+	$(GDB) -x debug.gdb blinkwithtimer.elf
+#	$(LLDB) -s debug.lldb blinkwithtimer.elf
 
 debug-usart1_tx:
 	$(GDB) -x debug.gdb usart1_tx.elf
