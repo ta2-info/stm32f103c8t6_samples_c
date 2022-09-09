@@ -27,7 +27,7 @@ CCOPT = -c -g -mcpu=cortex-m3 -mthumb
 ASMOPT = -g -mcpu=cortex-m3 -mthumb
 LDOPT = -Tstm32f103c8.ld
 
-all: blink.bin blinkwithtimer.bin usart1_tx.bin usart1_rx.bin usart1_rxtx.bin
+all: blink.bin blinkwithtimer.bin usart1_tx.bin usart1_rx.bin usart1_rxtx.bin usart1withdma_rx.bin
 
 blink.bin: blink.elf
 	$(OBJCOPY) -O binary $< $@
@@ -42,6 +42,9 @@ usart1_rx.bin: usart1_rx.elf
 	$(OBJCOPY) -O binary $< $@
 
 usart1_rxtx.bin: usart1_rxtx.elf
+	$(OBJCOPY) -O binary $< $@
+
+usart1withdma_rx.bin: usart1withdma_rx.elf
 	$(OBJCOPY) -O binary $< $@
 
 
@@ -59,6 +62,9 @@ usart1_rx.elf: vector.o usart1_rx.o
 
 usart1_rxtx.elf: vector.o usart1_rxtx.o
 	$(LD) $(LDOPT) -o $@ vector.o usart1_rxtx.o -Map usart1_rxtx.map
+
+usart1withdma_rx.elf: vector.o usart1withdma_rx.o
+	$(LD) $(LDOPT) -o $@ vector.o interrupt.o usart1withdma_rx.o -Map usart1withdma_rx.map
 
 
 vector.o: vector.s
@@ -82,6 +88,9 @@ usart1_rx.o: usart1_rx.c
 usart1_rxtx.o: usart1_rxtx.c
 	$(CC) $(CCOPT) -o $@ $<
 
+usart1withdma_rx.o: usart1withdma_rx.c
+	$(CC) $(CCOPT) -o $@ $<
+
 
 install-blink:
 #	$(ST-FLASH) write blink.bin $(BASE_FLASH)
@@ -103,6 +112,10 @@ install-usart1_rxtx:
 #	$(ST-FLASH) write usart1_rxtx.bin $(BASE_FLASH)
 	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./usart1_rxtx.bin $(BASE_FLASH) verify reset exit"
 
+install-usart1withdma_rx:
+#	$(ST-FLASH) write usart1withdma_rx.bin $(BASE_FLASH)
+	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./usart1withdma_rx.bin $(BASE_FLASH) verify reset exit"
+
 
 dis-blink:
 	$(OBJDUMP) -D blink.elf
@@ -118,6 +131,9 @@ dis-usart1_rx:
 
 dis-usart1_rxtx:
 	$(OBJDUMP) -D usart1_rxtx.elf
+
+dis-usart1withdma_rx:
+	$(OBJDUMP) -D usart1withdma_rx.elf
 
 
 debugserver:
@@ -144,6 +160,10 @@ debug-usart1_rx:
 debug-usart1_rxtx:
 	$(GDB) -x debug.gdb usart1_rxtx.elf
 #	$(LLDB) -s debug.lldb usart1_rxtx.elf
+
+debug-usart1withdma_rx:
+	$(GDB) -x debug.gdb usart1withdma_rx.elf
+#	$(LLDB) -s debug.lldb usart1withdma_rx.elf
 
 
 clean:

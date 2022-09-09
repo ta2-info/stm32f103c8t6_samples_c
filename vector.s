@@ -3,7 +3,7 @@
   .thumb // T32 instructions.
   .syntax unified // Describe ARM and THUMB instructions in a unified format
 
-  .equ STACK_TOP, 0x20005000 // STACK use from the end of SARM
+  .equ STACK_TOP, 0x20005000 // STACK use from the end of SRAM
 
   .extern _start
   .type _start, function

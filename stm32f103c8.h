@@ -7,13 +7,6 @@
 
 #include "common_macro.h"
 
-// base address of RCC(Reset and clock control)
-#define REG_RCC ((uint32_t) 0x40021000)
-// APB2 peripheral reset register
-#define REG_RCC_APB2RSTR (REG_RCC + 0x0c)
-// APB2 peripheral clock enable register
-#define REG_RCC_APB2ENR (REG_RCC + 0x18)
-
 // base address of GPIO Port A
 #define REG_GPIOA ((uint32_t) 0x40010800)
 // GPIOA_CRL(Port A configuration register low)
@@ -38,8 +31,95 @@
 #define REG_USART1_DR (REG_USART1 + 0x04)
 // USART1 baud rate register
 #define REG_USART1_BRR (REG_USART1 + 0x08)
-// USART1 control register
+// USART1 control register 1
 #define REG_USART1_CR1 (REG_USART1 + 0x0c)
+// USART1 control register 2
+#define REG_USART1_CR2 (REG_USART1 + 0x10)
+// USART1 control register 3
+#define REG_USART1_CR3 (REG_USART1 + 0x14)
+
+// base address of DMA1
+#define REG_DMA1 ((uint32_t) 0x40020000)
+// DMA1 interrupt status register
+#define REG_DMA1_ISR (REG_DMA1 + 0x00)
+// DMA1 interrupt flag clear register
+#define REG_DMA1_IFCR (REG_DMA1 + 0x04)
+// DMA1 channel 1 configuration register
+#define REG_DMA1_CCR1 (REG_DMA1 + 0x08)
+// DMA1 channel 1 number of data register
+#define REG_DMA1_CNDTR1 (REG_DMA1 + 0x0c)
+// DMA1 channel 1 peripheral address register
+#define REG_DMA1_CPAR1 (REG_DMA1 + 0x10)
+// DMA1 channel 1 memory address register
+#define REG_DMA1_CMAR1 (REG_DMA1 + 0x14)
+// DMA1 channel 2 configuration register
+#define REG_DMA1_CCR2 (REG_DMA1 + 0x1c)
+// DMA1 channel 2 number of data register
+#define REG_DMA1_CNDTR2 (REG_DMA1 + 0x20)
+// DMA1 channel 2 peripheral address register
+#define REG_DMA1_CPAR2 (REG_DMA1 + 0x24)
+// DMA1 channel 2 memory address register
+#define REG_DMA1_CMAR2 (REG_DMA1 + 0x28)
+// DMA1 channel 3 configuration register
+#define REG_DMA1_CCR3 (REG_DMA1 + 0x30)
+// DMA1 channel 3 number of data register
+#define REG_DMA1_CNDTR3 (REG_DMA1 + 0x34)
+// DMA1 channel 3 peripheral address register
+#define REG_DMA1_CPAR3 (REG_DMA1 + 0x38)
+// DMA1 channel 3 memory address register
+#define REG_DMA1_CMAR3 (REG_DMA1 + 0x3c)
+// DMA1 channel 4 configuration register
+#define REG_DMA1_CCR4 (REG_DMA1 + 0x44)
+// DMA1 channel 4 number of data register
+#define REG_DMA1_CNDTR4 (REG_DMA1 + 0x48)
+// DMA1 channel 4 peripheral address register
+#define REG_DMA1_CPAR4 (REG_DMA1 + 0x4c)
+// DMA1 channel 4 memory address register
+#define REG_DMA1_CMAR4 (REG_DMA1 + 0x50)
+// DMA1 channel 5 configuration register
+#define REG_DMA1_CCR5 (REG_DMA1 + 0x58)
+// DMA1 channel 5 number of data register
+#define REG_DMA1_CNDTR5 (REG_DMA1 + 0x5c)
+// DMA1 channel 5 peripheral address register
+#define REG_DMA1_CPAR5 (REG_DMA1 + 0x60)
+// DMA1 channel 5 memory address register
+#define REG_DMA1_CMAR5 (REG_DMA1 + 0x64)
+// DMA1 channel 6 configuration register
+#define REG_DMA1_CCR6 (REG_DMA1 + 0x6c)
+// DMA1 channel 6 number of data register
+#define REG_DMA1_CNDTR6 (REG_DMA1 + 0x70)
+// DMA1 channel 6 peripheral address register
+#define REG_DMA1_CPAR6 (REG_DMA1 + 0x74)
+// DMA1 channel 6 memory address register
+#define REG_DMA1_CMAR6 (REG_DMA1 + 0x78)
+// DMA1 channel 7 configuration register
+#define REG_DMA1_CCR7 (REG_DMA1 + 0x80)
+// DMA1 channel 7 number of data register
+#define REG_DMA1_CNDTR7 (REG_DMA1 + 0x84)
+// DMA1 channel 7 peripheral address register
+#define REG_DMA1_CPAR7 (REG_DMA1 + 0x88)
+// DMA1 channel 7 memory address register
+#define REG_DMA1_CMAR7 (REG_DMA1 + 0x8c)
+
+
+// base address of RCC(Reset and clock control)
+#define REG_RCC ((uint32_t) 0x40021000)
+// Clock control register
+#define REG_RCC_CR (REG_RCC + 0x00)
+// Clock configuration register
+#define REG_RCC_CFGR (REG_RCC + 0x04)
+// Clock interrupt register
+#define REG_RCC_CIR (REG_RCC + 0x08)
+// APB2 peripheral reset register
+#define REG_RCC_APB2RSTR (REG_RCC + 0x0c)
+// APB1 peripheral reset register
+#define REG_RCC_APB1RSTR (REG_RCC + 0x10)
+// AHB peripheral clock enable register
+#define REG_RCC_AHBENR (REG_RCC + 0x14)
+// APB2 peripheral clock enable register
+#define REG_RCC_APB2ENR (REG_RCC + 0x18)
+// APB1 peripheral clock enable register
+#define REG_RCC_APB1ENR (REG_RCC + 0x1c)
 
 
 // Coretex-M3
@@ -108,5 +188,4 @@
 #define REG_SCB_AFSR (REG_SCB + 0x3c)
 
 
-extern void (*SysTick_Handler_callback)();
 
