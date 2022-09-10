@@ -1,5 +1,6 @@
 
 #include "stm32f103c8.h"
+#include "interrupt.h"
 
 static void blink_systick_callback() {
   uint32_t tmp32;

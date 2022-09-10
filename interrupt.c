@@ -1,5 +1,6 @@
 
 #include "stm32f103c8.h"
+#include "interrupt.h"
 
 #include <stddef.h> // NULL
 
@@ -19,6 +20,8 @@ void Handler() { \
 //INTERRUPT_CALLBACK(DebugMon_Handler)
 //INTERRUPT_CALLBACK(PendSV_Handler)
 INTERRUPT_CALLBACK(SysTick_Handler)
+
+//IRQ 0
 //INTERRUPT_CALLBACK(WWDG_IRQHandler)
 //INTERRUPT_CALLBACK(PVD_IRQHandler)
 //INTERRUPT_CALLBACK(TAMPER_IRQHandler)
@@ -34,7 +37,7 @@ INTERRUPT_CALLBACK(SysTick_Handler)
 //INTERRUPT_CALLBACK(DMA1_Channel2_IRQHandler)
 //INTERRUPT_CALLBACK(DMA1_Channel3_IRQHandler)
 //INTERRUPT_CALLBACK(DMA1_Channel4_IRQHandler)
-//INTERRUPT_CALLBACK(DMA1_Channel5_IRQHandler)
+INTERRUPT_CALLBACK(DMA1_Channel5_IRQHandler)
 //INTERRUPT_CALLBACK(DMA1_Channel6_IRQHandler)
 //INTERRUPT_CALLBACK(DMA1_Channel7_IRQHandler)
 //INTERRUPT_CALLBACK(ADC1_2_IRQHandler)
