@@ -27,7 +27,7 @@ CCOPT = -c -g -mcpu=cortex-m3 -mthumb
 ASMOPT = -g -mcpu=cortex-m3 -mthumb
 LDOPT = -Tstm32f103c8.ld
 
-all: blink.bin blinkwithtimer.bin usart1_tx.bin usart1_rx.bin usart1_rxtx.bin usart1withdma_rx.bin
+all: blink.bin blinkwithtimer.bin usart1_tx.bin usart1_rx.bin usart1_rxtx.bin usart1withdma_rx.bin usart2_tx_10digits.bin
 
 blink.bin: blink.elf
 	$(OBJCOPY) -O binary $< $@
@@ -45,6 +45,9 @@ usart1_rxtx.bin: usart1_rxtx.elf
 	$(OBJCOPY) -O binary $< $@
 
 usart1withdma_rx.bin: usart1withdma_rx.elf
+	$(OBJCOPY) -O binary $< $@
+
+usart2_tx_10digits.bin: usart2_tx_10digits.elf
 	$(OBJCOPY) -O binary $< $@
 
 
@@ -65,6 +68,9 @@ usart1_rxtx.elf: vector.o usart1_rxtx.o
 
 usart1withdma_rx.elf: vector.o usart1withdma_rx.o
 	$(LD) $(LDOPT) -o $@ vector.o interrupt.o usart1withdma_rx.o -Map usart1withdma_rx.map
+
+usart2_tx_10digits.elf: vector.o usart2_tx_10digits.o
+	$(LD) $(LDOPT) -o $@ vector.o usart2_tx_10digits.o -Map usart2_tx_10digits.map
 
 
 vector.o: vector.s
@@ -89,6 +95,9 @@ usart1_rxtx.o: usart1_rxtx.c
 	$(CC) $(CCOPT) -o $@ $<
 
 usart1withdma_rx.o: usart1withdma_rx.c
+	$(CC) $(CCOPT) -o $@ $<
+
+usart2_tx_10digits.o: usart2_tx_10digits.c
 	$(CC) $(CCOPT) -o $@ $<
 
 
@@ -116,6 +125,10 @@ install-usart1withdma_rx:
 #	$(ST-FLASH) write usart1withdma_rx.bin $(BASE_FLASH)
 	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./usart1withdma_rx.bin $(BASE_FLASH) verify reset exit"
 
+install-usart2_tx_10digits:
+#	$(ST-FLASH) write usart2_tx_10digits.bin $(BASE_FLASH)
+	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./usart2_tx_10digits.bin $(BASE_FLASH) verify reset exit"
+
 
 dis-blink:
 	$(OBJDUMP) -D blink.elf
@@ -134,6 +147,9 @@ dis-usart1_rxtx:
 
 dis-usart1withdma_rx:
 	$(OBJDUMP) -D usart1withdma_rx.elf
+
+dis-usart2_tx_10digits:
+	$(OBJDUMP) -D usart2_tx_10digits.elf
 
 
 debugserver:
@@ -164,6 +180,10 @@ debug-usart1_rxtx:
 debug-usart1withdma_rx:
 	$(GDB) -x debug.gdb usart1withdma_rx.elf
 #	$(LLDB) -s debug.lldb usart1withdma_rx.elf
+
+debug-usart2_tx_10digits:
+	$(GDB) -x debug.gdb usart2_tx_10digits.elf
+#	$(LLDB) -s debug.lldb usart2_tx_10digits.elf
 
 
 clean:
