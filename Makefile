@@ -27,129 +27,88 @@ CCOPT = -c -g -mcpu=cortex-m3 -mthumb
 ASMOPT = -g -mcpu=cortex-m3 -mthumb
 LDOPT = -Tstm32f103c8.ld
 
-all: blink.bin blinkwithtimer.bin usart1_tx.bin usart1_rx.bin usart1_rxtx.bin usart1withdma_rx.bin usart2_tx_10digits.bin
-
-blink.bin: blink.elf
-	$(OBJCOPY) -O binary $< $@
-
-blinkwithtimer.bin: blinkwithtimer.elf
-	$(OBJCOPY) -O binary $< $@
-
-usart1_tx.bin: usart1_tx.elf
-	$(OBJCOPY) -O binary $< $@
-
-usart1_rx.bin: usart1_rx.elf
-	$(OBJCOPY) -O binary $< $@
-
-usart1_rxtx.bin: usart1_rxtx.elf
-	$(OBJCOPY) -O binary $< $@
-
-usart1withdma_rx.bin: usart1withdma_rx.elf
-	$(OBJCOPY) -O binary $< $@
-
-usart2_tx_10digits.bin: usart2_tx_10digits.elf
-	$(OBJCOPY) -O binary $< $@
-
-
-blink.elf: vector.o blink.o
-	$(LD) $(LDOPT) -o $@ vector.o blink.o -Map blink.map
-
-blinkwithtimer.elf: vector.o interrupt.o blinkwithtimer.o
-	$(LD) $(LDOPT) -o $@ vector.o interrupt.o blinkwithtimer.o -Map blinkwithtimer.map
-
-usart1_tx.elf: vector.o usart1_tx.o
-	$(LD) $(LDOPT) -o $@ vector.o usart1_tx.o -Map usart1_tx.map
-
-usart1_rx.elf: vector.o usart1_rx.o
-	$(LD) $(LDOPT) -o $@ vector.o usart1_rx.o -Map usart1_rx.map
-
-usart1_rxtx.elf: vector.o usart1_rxtx.o
-	$(LD) $(LDOPT) -o $@ vector.o usart1_rxtx.o -Map usart1_rxtx.map
-
-usart1withdma_rx.elf: vector.o usart1withdma_rx.o
-	$(LD) $(LDOPT) -o $@ vector.o interrupt.o usart1withdma_rx.o -Map usart1withdma_rx.map
-
-usart2_tx_10digits.elf: vector.o usart2_tx_10digits.o
-	$(LD) $(LDOPT) -o $@ vector.o usart2_tx_10digits.o -Map usart2_tx_10digits.map
-
-
-vector.o: vector.s
+%.o:%.s
 	$(ASM) $(ASMOPT) -o $@ $<
 
-interrupt.o: interrupt.c
+%.o:%.c
 	$(CC) $(CCOPT) -o $@ $<
 
-blink.o: blink.c
-	$(CC) $(CCOPT) -o $@ $<
+%.bin:%.elf
+	$(OBJCOPY) -O binary $< $@
 
-blinkwithtimer.o: blinkwithtimer.c
-	$(CC) $(CCOPT) -o $@ $<
+all: blink.bin blinkwithtimer.bin usart1_tx.bin usart1_rx.bin usart1_rxtx.bin usart1withdma_rx.bin usart2_tx_10digits.bin
 
-usart1_tx.o: usart1_tx.c
-	$(CC) $(CCOPT) -o $@ $<
+blink.elf: vector.o blink.o
+	$(LD) $(LDOPT) -o $@ $^ -Map $(@:.elf=.map)
 
-usart1_rx.o: usart1_rx.c
-	$(CC) $(CCOPT) -o $@ $<
+blinkwithtimer.elf: vector.o interrupt.o blinkwithtimer.o
+	$(LD) $(LDOPT) -o $@ $^ -Map $(@:.elf=.map)
 
-usart1_rxtx.o: usart1_rxtx.c
-	$(CC) $(CCOPT) -o $@ $<
+usart1_tx.elf: vector.o usart1_tx.o
+	$(LD) $(LDOPT) -o $@ $^ -Map $(@:.elf=.map)
 
-usart1withdma_rx.o: usart1withdma_rx.c
-	$(CC) $(CCOPT) -o $@ $<
+usart1_rx.elf: vector.o usart1_rx.o
+	$(LD) $(LDOPT) -o $@ $^ -Map $(@:.elf=.map)
 
-usart2_tx_10digits.o: usart2_tx_10digits.c
-	$(CC) $(CCOPT) -o $@ $<
+usart1_rxtx.elf: vector.o usart1_rxtx.o
+	$(LD) $(LDOPT) -o $@ $^ -Map $(@:.elf=.map)
+
+usart1withdma_rx.elf: vector.o interrupt.o usart1withdma_rx.o
+	$(LD) $(LDOPT) -o $@ $^ -Map $(@:.elf=.map)
+
+usart2_tx_10digits.elf: vector.o usart2_tx_10digits.o
+	$(LD) $(LDOPT) -o $@ $^ -Map $(@:.elf=.map)
 
 
 install-blink:
-#	$(ST-FLASH) write blink.bin $(BASE_FLASH)
-	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./blink.bin $(BASE_FLASH) verify reset exit"
+#	$(ST-FLASH) write $(@:install-%=%.bin) $(BASE_FLASH)
+	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./$(@:install-%=%.bin) $(BASE_FLASH) verify reset exit"
 
 install-blinkwithtimer:
-#	$(ST-FLASH) write blinkwithtimer.bin $(BASE_FLASH)
-	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./blinkwithtimer.bin $(BASE_FLASH) verify reset exit"
+#	$(ST-FLASH) write $(@:install-%=%.bin) $(BASE_FLASH)
+	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./$(@:install-%=%.bin) $(BASE_FLASH) verify reset exit"
 
 install-usart1_tx:
-#	$(ST-FLASH) write usart1_tx.bin $(BASE_FLASH)
-	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./usart1_tx.bin $(BASE_FLASH) verify reset exit"
+#	$(ST-FLASH) write $(@:install-%=%.bin) $(BASE_FLASH)
+	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./$(@:install-%=%.bin) $(BASE_FLASH) verify reset exit"
 
 install-usart1_rx:
-#	$(ST-FLASH) write usart1_rx.bin $(BASE_FLASH)
-	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./usart1_rx.bin $(BASE_FLASH) verify reset exit"
+#	$(ST-FLASH) write $(@:install-%=%.bin) $(BASE_FLASH)
+	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./$(@:install-%=%.bin) $(BASE_FLASH) verify reset exit"
 
 install-usart1_rxtx:
-#	$(ST-FLASH) write usart1_rxtx.bin $(BASE_FLASH)
-	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./usart1_rxtx.bin $(BASE_FLASH) verify reset exit"
+#	$(ST-FLASH) write $(@:install-%=%.bin) $(BASE_FLASH)
+	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./$(@:install-%=%.bin) $(BASE_FLASH) verify reset exit"
 
 install-usart1withdma_rx:
-#	$(ST-FLASH) write usart1withdma_rx.bin $(BASE_FLASH)
-	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./usart1withdma_rx.bin $(BASE_FLASH) verify reset exit"
+#	$(ST-FLASH) write $(@:install-%=%.bin) $(BASE_FLASH)
+	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./$(@:install-%=%.bin) $(BASE_FLASH) verify reset exit"
 
 install-usart2_tx_10digits:
-#	$(ST-FLASH) write usart2_tx_10digits.bin $(BASE_FLASH)
-	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./usart2_tx_10digits.bin $(BASE_FLASH) verify reset exit"
+#	$(ST-FLASH) write $(@:install-%=%.bin) $(BASE_FLASH)
+	$(OPENOCD) -f interface/stlink.cfg -f target/stm32f1x.cfg  -c "program ./$(@:install-%=%.bin) $(BASE_FLASH) verify reset exit"
 
 
 dis-blink:
-	$(OBJDUMP) -D blink.elf
+	$(OBJDUMP) -D $(@:dis-%=%.elf)
 
 dis-blinkwithtimer:
-	$(OBJDUMP) -D blinkwithtimer.elf
+	$(OBJDUMP) -D $(@:dis-%=%.elf)
 
 dis-usart1_tx:
-	$(OBJDUMP) -D usart1_tx.elf
+	$(OBJDUMP) -D $(@:dis-%=%.elf)
 
 dis-usart1_rx:
-	$(OBJDUMP) -D usart1_rx.elf
+	$(OBJDUMP) -D $(@:dis-%=%.elf)
 
 dis-usart1_rxtx:
-	$(OBJDUMP) -D usart1_rxtx.elf
+	$(OBJDUMP) -D $(@:dis-%=%.elf)
 
 dis-usart1withdma_rx:
-	$(OBJDUMP) -D usart1withdma_rx.elf
+	$(OBJDUMP) -D $(@:dis-%=%.elf)
 
 dis-usart2_tx_10digits:
-	$(OBJDUMP) -D usart2_tx_10digits.elf
+	$(OBJDUMP) -D $(@:dis-%=%.elf)
 
 
 debugserver:
@@ -158,32 +117,32 @@ debugserver:
 
 
 debug-blink:
-	$(GDB) -x debug.gdb blink.elf
-#	$(LLDB) -s debug.lldb blink.elf
+	$(GDB) -x debug.gdb $(@:debug-%=%.elf)
+#	$(LLDB) -s debug.lldb $(@:debug-%=%.elf)
 
 debug-blinkwithtimer:
-	$(GDB) -x debug.gdb blinkwithtimer.elf
-#	$(LLDB) -s debug.lldb blinkwithtimer.elf
+	$(GDB) -x debug.gdb $(@:debug-%=%.elf)
+#	$(LLDB) -s debug.lldb $(@:debug-%=%.elf)
 
 debug-usart1_tx:
-	$(GDB) -x debug.gdb usart1_tx.elf
-#	$(LLDB) -s debug.lldb usart1_tx.elf
+	$(GDB) -x debug.gdb $(@:debug-%=%.elf)
+#	$(LLDB) -s debug.lldb $(@:debug-%=%.elf)
 
 debug-usart1_rx:
-	$(GDB) -x debug.gdb usart1_rx.elf
-#	$(LLDB) -s debug.lldb usart1_rx.elf
+	$(GDB) -x debug.gdb $(@:debug-%=%.elf)
+#	$(LLDB) -s debug.lldb $(@:debug-%=%.elf)
 
 debug-usart1_rxtx:
-	$(GDB) -x debug.gdb usart1_rxtx.elf
-#	$(LLDB) -s debug.lldb usart1_rxtx.elf
+	$(GDB) -x debug.gdb $(@:debug-%=%.elf)
+#	$(LLDB) -s debug.lldb $(@:debug-%=%.elf)
 
 debug-usart1withdma_rx:
-	$(GDB) -x debug.gdb usart1withdma_rx.elf
-#	$(LLDB) -s debug.lldb usart1withdma_rx.elf
+	$(GDB) -x debug.gdb $(@:debug-%=%.elf)
+#	$(LLDB) -s debug.lldb $(@:debug-%=%.elf)
 
 debug-usart2_tx_10digits:
-	$(GDB) -x debug.gdb usart2_tx_10digits.elf
-#	$(LLDB) -s debug.lldb usart2_tx_10digits.elf
+	$(GDB) -x debug.gdb $(@:debug-%=%.elf)
+#	$(LLDB) -s debug.lldb $(@:debug-%=%.elf)
 
 
 clean:
