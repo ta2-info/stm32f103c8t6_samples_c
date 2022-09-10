@@ -7,6 +7,17 @@
 
 #include "common_macro.h"
 
+// base address of USART2
+#define REG_USART2 ((uint32_t) 0x40004400)
+// USART1 status register
+#define REG_USART2_SR (REG_USART2 + 0x00)
+// USART1 data register
+#define REG_USART2_DR (REG_USART2 + 0x04)
+// USART1 baud rate register
+#define REG_USART2_BRR (REG_USART2 + 0x08)
+// USART1 control register
+#define REG_USART2_CR1 (REG_USART2 + 0x0c)
+
 // base address of GPIO Port A
 #define REG_GPIOA ((uint32_t) 0x40010800)
 // GPIOA_CRL(Port A configuration register low)
